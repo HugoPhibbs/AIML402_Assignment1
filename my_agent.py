@@ -1,15 +1,13 @@
-__author__ = "<your name>"
+__author__ = "Hugo Phibbs"
 __organization__ = "COSC343/AIML402, University of Otago"
-__email__ = "<your e-mail>"
+__email__ = "phihu414@student.otago.ac.nz"
 
 from typing import List
 
-import numpy as np
 from itertools import product
 
 from mastermind import evaluate_guess
 import multiprocessing as mp
-
 
 class MastermindAgent():
     """
@@ -35,22 +33,22 @@ class MastermindAgent():
 
     def __init__(self, code_length, colours, num_guesses):
         """
-      :param code_length: the length of the code to guess
-      :param colours: list of letter representing colours used to play
-      :param num_guesses: the max. number of guesses per game
-      """
+        :param code_length: the length of the code to guess
+        :param colours: list of letter representing colours used to play
+        :param num_guesses: the max. number of guesses per game
+        """
 
         self.possible_guesses = None
         self.code_length = code_length
         self.colours = colours
         self.num_guesses = num_guesses
+        self.possible_guesses_copy = set(product(self.colours, repeat=self.code_length))
 
     def possible_scores(self):
         scores = []
         for i in range(self.code_length+1, 0, -1):
             scores.append([0] * i)
         return scores
-
 
     def AgentFunction(self, percepts) -> List[str]:
         """Returns the next board guess given state of the game in percepts
@@ -76,18 +74,28 @@ class MastermindAgent():
         guess_counter, last_guess, in_place, in_colour = percepts
 
         if guess_counter == 0:
-            # Reset the list of possible guesses
-            self.possible_guesses = set(product(self.colours, repeat=self.code_length))
+            return self.handle_first_guess()
 
-            # Start of a game, assume that the last_guess is a list of zeros
-            partition_length = self.code_length // 2
-            return [self.colours[0]] * partition_length + [self.colours[1]] * (int(self.code_length) - partition_length)
-
-        # Eliminate guesses that are not possible.
+        # Eliminate guesses that is not possible.
         self.remove_possible_guesses(last_guess, in_place, in_colour)
 
         # return self.find_best_guess(self.possible_guesses, 0, len(self.possible_guesses))[0]
         return self.find_best_guess_multi_core()[0]
+
+    def handle_first_guess(self) -> List[str]:
+        """
+        Handles the first guess for the master mind bot
+
+        :return: list of chars the first guess
+        """
+        # Reset the list of possible guesses, just copy the original list, no need to do expensive product calculation
+        self.possible_guesses = self.possible_guesses_copy.copy()
+
+        # Start of a game, assume that the last_guess is a list of zeros
+        partition_length = self.code_length // 2
+
+        # Return a guess that is half the first colour and half the second colour, as per Knuth's algorithm
+        return [self.colours[0]] * partition_length + [self.colours[1]] * (int(self.code_length) - partition_length)
 
     def find_best_guess_multi_core(self):
         """
@@ -99,7 +107,8 @@ class MastermindAgent():
         num_parallel_processes = 5 #mp.cpu_count() # Can tweak this as need be
         partition_size = len(possible_guesses_list) // num_parallel_processes
 
-        # Handle case where partition size is 0, i.e. number of possible guesses is less than number of processes, so just run on one process, speed effect will be negligible
+        # Handle case where partition size is 0, i.e. number of possible guesses is less than number of processes,
+        # so just run on one process, speed effect will be negligible
         if partition_size == 0:
             return self.find_best_guess(possible_guesses_list, 0, len(possible_guesses_list))
         else:
@@ -153,7 +162,6 @@ class MastermindAgent():
         :param in_colour: number of chars in last guess that are the correct colour but not in the correct place
         :return:
         """
-        # TODO add docs
         # TODO figure out how this works for report!
         for guess in self.possible_guesses.copy():
             if evaluate_guess(last_guess, guess) != (in_place, in_colour):
