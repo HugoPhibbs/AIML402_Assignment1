@@ -8,7 +8,7 @@ game_settings = {
 
    "agentFile": "my_agent.py", # name of the agent file (replace with my_agent.py when your agent is ready)
 
-   "codeLength": 4,              # length of the code to guess
+   "codeLength": 5,              # length of the code to guess
 
    "numberOfColours": 7,         # number of colours (1-6)
 
