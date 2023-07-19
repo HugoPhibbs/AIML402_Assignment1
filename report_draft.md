@@ -20,7 +20,8 @@ TODO find why this is optimal
    code "PPGG" since F("BBRR", "PPGG") = (0, 2), theres no way that "PPGG" could be 
    the real code. 
 4. The next step is the crux of the algorithm. From here we use a min-max strategy. 
-   You are pretty much choosing the next best guess that will at best eliminate the most 
+   You are pretty much choosing the next best guess that will at worst eliminate the 
+   most 
    guesses from the set S during step 3. 
 
 Algorithm can be called greedy

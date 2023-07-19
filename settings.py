@@ -10,7 +10,7 @@ game_settings = {
 
    "codeLength": 5,              # length of the code to guess
 
-   "numberOfColours": 7,         # number of colours (1-6)
+   "numberOfColours": 6,         # number of colours (1-6)
 
    "maxNumberOfGuesses": 10,     # max. number of guesses per game
 
@@ -18,8 +18,7 @@ game_settings = {
 
    "verbose": True,
 
-   "seed": 0                     # seed for random choices of words in the game, None for random seed
-
+   "seed": 0                    # seed for random choices of words in the game, None for random seed,
 }
 
 
