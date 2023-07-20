@@ -108,7 +108,7 @@ def evaluate_guess(guess, target):
 
 # Class player is a wrapper for a player agent
 class Player:
-	def __init__(self, playerFile, code_length, colours, num_guesses):
+	def __init__(self, playerFile, code_length, colours, num_guesses, **kwargs):
 		self.playerFile = playerFile
 
 		if not os.path.exists(playerFile):
@@ -125,7 +125,10 @@ class Player:
 			raise RuntimeError(str(e))
 
 		try:
-			self.agent = self.exec.MastermindAgent(code_length=code_length, colours=colours, num_guesses=num_guesses)
+			self.agent = self.exec.MastermindAgent(code_length=code_length,
+												   colours=colours,
+												   num_guesses=num_guesses,
+												   partition_divisor=kwargs["partition_divisor"])
 		except Exception as e:
 			raise RuntimeError(str(e))
 
@@ -239,7 +242,7 @@ class MastermindGame:
 			sys.stdout.write("\r\n")
 		return score * 2
 
-	def run(self, agentFile='agent_human.py', num_guesses=6, num_games=1000, seed=None):
+	def run(self, agentFile='agent_human.py', num_guesses=6, num_games=1000, seed=None, partition_divisor=5):
 
 		if self.verbose:
 			print("Game play:")
@@ -253,7 +256,8 @@ class MastermindGame:
 
 		try:
 			player = Player(playerFile=agentFile, code_length=self.code_length, colours=list(self.colours),
-							num_guesses=num_guesses)
+							num_guesses=num_guesses,
+							partition_divisor=partition_divisor)
 		except Exception as e:
 			self.throwError(str(e))
 
@@ -266,6 +270,9 @@ class MastermindGame:
 		score = 0
 		game_count = 0
 		tot_time = 0
+
+		average_score = 0
+
 		for i in I:
 			if self.verbose:
 				print("Round %d/%d" % (game_count + 1, len(I)))
@@ -274,7 +281,10 @@ class MastermindGame:
 			score += self.play(player, target=self.colours[i], num_guesses=num_guesses)
 			end = time.time()
 			game_count += 1
-			print("Average score after game %d: %.2f" % (game_count, score / (game_count)))
+
+			average_score = score / game_count
+
+			print("Average score after game %d: %.2f" % (game_count, score / game_count))
 			tot_time += end - start
 
 			if game_count < num_games:
@@ -284,6 +294,8 @@ class MastermindGame:
 				print("Expected total running time %s." % (time_to_str(avg_time * num_games)))
 			else:
 				print("Total running time %s." % (time_to_str(tot_time)))
+
+		return average_score
 
 
 if __name__ == "__main__":
