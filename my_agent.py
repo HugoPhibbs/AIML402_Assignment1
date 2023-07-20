@@ -33,7 +33,7 @@ class MastermindAgent():
                  Returns the next guess of the colours on the board
              """
 
-    def __init__(self, code_length, colours, num_guesses):
+    def __init__(self, code_length, colours, num_guesses, partition_divisor=5):
         """
         :param code_length: the length of the code to guess
         :param colours: list of letter representing colours used to play
@@ -45,6 +45,7 @@ class MastermindAgent():
         self.colours = colours
         self.num_guesses = num_guesses
         self.possible_guesses_copy = set(product(self.colours, repeat=self.code_length))
+        self.partition_divisor = partition_divisor
 
     def possible_scores(self):
         scores = []
@@ -136,7 +137,7 @@ class MastermindAgent():
 
         # Instead of looking through the whole range, just look at a random portion of it
 
-        portion_size = (j - i) // 5
+        portion_size = (j - i) // self.partition_divisor
 
         # Function to index in random amounts
         # Has an expected value of E(increment) = portion_size/2
