@@ -9,6 +9,8 @@ from itertools import product
 from mastermind import evaluate_guess
 import multiprocessing as mp
 
+import numpy as np
+
 class MastermindAgent():
     """
              A class that encapsulates the code dictating the
@@ -31,7 +33,7 @@ class MastermindAgent():
                  Returns the next guess of the colours on the board
              """
 
-    def __init__(self, code_length, colours, num_guesses):
+    def __init__(self, code_length, colours, num_guesses, partition_divisor=5):
         """
         :param code_length: the length of the code to guess
         :param colours: list of letter representing colours used to play
@@ -43,6 +45,7 @@ class MastermindAgent():
         self.colours = colours
         self.num_guesses = num_guesses
         self.possible_guesses_copy = set(product(self.colours, repeat=self.code_length))
+        self.partition_divisor = partition_divisor
 
     def possible_scores(self):
         scores = []
@@ -132,13 +135,25 @@ class MastermindAgent():
         lowest_overall_g_score = float('inf')
         best_guess = None
 
-        for i in range(i, j):
+        # Instead of looking through the whole range, just look at a random portion of it
+
+        portion_size = (j - i) // self.partition_divisor
+
+        # Function to index in random amounts
+        # Has an expected value of E(increment) = portion_size/2
+        increment_function = lambda x: x + 1 if portion_size == 0 else x + np.random.randint(1, portion_size + 1)
+
+        i = 0
+
+        while i < j:
             guess = possible_guesses_list[i]
             max_g_score = 0
 
             possible_scores = self.possible_scores()
+            k = 0
 
-            for second_guess in self.possible_guesses:
+            while k < j:
+                second_guess = possible_guesses_list[k]
                 score = evaluate_guess(guess, second_guess)
                 possible_scores[score[0]][score[1]] += 1
                 new_score = possible_scores[score[0]][score[1]]
@@ -147,9 +162,13 @@ class MastermindAgent():
                 if max_g_score > lowest_overall_g_score:
                     break
 
+                k = increment_function(k)
+
             if max_g_score < lowest_overall_g_score:
                 best_guess = guess
                 lowest_overall_g_score = max_g_score
+
+            i = increment_function(i)
 
         return list(best_guess), lowest_overall_g_score
 

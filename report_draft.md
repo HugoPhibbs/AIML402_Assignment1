@@ -1,5 +1,12 @@
 # Report Draft
 
+## Ideas
+- Improving the algorithm
+- A note on runtime
+- Discussion of balance between runtime and average guesses.
+- Full trials with best case scenario (run with n=250)
+- Could add analysis with matplotlib - may be easier than excel
+
 ## The Knuth Algorithm Explained
 
 For the following steps, assume that the code is of length 4, and there are a 4 
@@ -21,7 +28,8 @@ TODO find why this is optimal
    the real code. 
 4. The next step is the crux of the algorithm. From here we use a min-max strategy. 
    You are pretty much choosing the next best guess that will at worst eliminate the 
-   most 
+   most possible guesses in step 3 of the algorithm. Whatever the best guesss here is, 
+   is what you submit as your next guess.
    guesses from the set S during step 3. 
 
 Algorithm can be called greedy
