@@ -33,7 +33,7 @@ class MastermindAgent():
                  Returns the next guess of the colours on the board
              """
 
-    def __init__(self, code_length, colours, num_guesses, partition_divisor=5):
+    def __init__(self, code_length, colours, num_guesses, partition_divisor=1):
         """
         :param code_length: the length of the code to guess
         :param colours: list of letter representing colours used to play
@@ -136,6 +136,7 @@ class MastermindAgent():
         best_guess = None
 
         # Instead of looking through the whole range, just look at a random portion of it
+
 
         portion_size = (j - i) // self.partition_divisor
 

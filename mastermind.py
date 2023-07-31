@@ -242,7 +242,7 @@ class MastermindGame:
 			sys.stdout.write("\r\n")
 		return score * 2
 
-	def run(self, agentFile='agent_human.py', num_guesses=6, num_games=1000, seed=None, partition_divisor=5):
+	def run(self, agentFile='agent_human.py', num_guesses=6, num_games=1000, seed=None, partition_divisor=1):
 
 		if self.verbose:
 			print("Game play:")
