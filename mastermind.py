@@ -127,8 +127,7 @@ class Player:
 		try:
 			self.agent = self.exec.MastermindAgent(code_length=code_length,
 												   colours=colours,
-												   num_guesses=num_guesses,
-												   partition_divisor=kwargs["partition_divisor"])
+												   num_guesses=num_guesses)
 		except Exception as e:
 			raise RuntimeError(str(e))
 
@@ -242,7 +241,7 @@ class MastermindGame:
 			sys.stdout.write("\r\n")
 		return score * 2
 
-	def run(self, agentFile='agent_human.py', num_guesses=6, num_games=1000, seed=None, partition_divisor=1):
+	def run(self, agentFile='agent_human.py', num_guesses=6, num_games=1000, seed=None):
 
 		if self.verbose:
 			print("Game play:")
@@ -256,8 +255,7 @@ class MastermindGame:
 
 		try:
 			player = Player(playerFile=agentFile, code_length=self.code_length, colours=list(self.colours),
-							num_guesses=num_guesses,
-							partition_divisor=partition_divisor)
+							num_guesses=num_guesses)
 		except Exception as e:
 			self.throwError(str(e))
 
@@ -272,6 +270,8 @@ class MastermindGame:
 		tot_time = 0
 
 		average_score = 0
+		avg_time = 0
+		average_scores_array = []
 
 		for i in I:
 			if self.verbose:
@@ -284,7 +284,9 @@ class MastermindGame:
 
 			average_score = score / game_count
 
-			print("Average score after game %d: %.2f" % (game_count, score / game_count))
+			average_scores_array.append(average_score)
+
+			print("Average score after game %d: %.2f" % (game_count, average_score))
 			tot_time += end - start
 
 			if game_count < num_games:
@@ -295,7 +297,7 @@ class MastermindGame:
 			else:
 				print("Total running time %s." % (time_to_str(tot_time)))
 
-		return average_score
+		return average_scores_array, avg_time
 
 
 if __name__ == "__main__":
